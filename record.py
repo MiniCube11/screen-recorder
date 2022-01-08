@@ -3,7 +3,7 @@ import sys
 import shutil
 import time
 from PIL import Image, ImageGrab
-from helper import get_valid_input, get_valid_integer
+from helper import get_input, get_valid_input, get_valid_integer
 
 
 def create_directory(directory):
@@ -25,7 +25,7 @@ def cancel_recording():
 
 
 def start_recording():
-    if input("Press enter to start recording, Ctrl+C to stop recording, q to quit: ") == "q":
+    if get_input("Press enter to start recording, Ctrl+C to stop recording, q to quit: ") == "q":
         cancel_recording()
 
 
@@ -113,7 +113,7 @@ def save_gif(filename, start_frame=1, end_frame=None):
 
 
 def record():
-    filename = input("Enter filename: ")
+    filename = get_input("Enter filename: ")
     create_directory(filename)
 
     start_recording()
@@ -123,7 +123,7 @@ def record():
 
 
 def save():
-    filename = input("Enter name of recording: ")
+    filename = get_input("Enter name of recording: ")
     start_frame = get_valid_integer(
         "Start at frame (enter to use first frame): ", optional=True, default=1)
     end_frame = get_valid_integer(

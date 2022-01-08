@@ -6,13 +6,8 @@ average_time = 0
 
 welcome_screen()
 while True:
-    try:
-        option = get_option()
-        if option == "start":
-            record()
-        elif option == "save":
-            save()
-
-    except KeyboardInterrupt:
-        print("Program stopped by user.")
-        break
+    option = get_option()
+    if option == "start":
+        record()
+    elif option == "save":
+        save()
