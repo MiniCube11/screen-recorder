@@ -3,7 +3,7 @@ import sys
 
 welcome_text = """
 
-Welcome to Screen to GIF
+Welcome to Screen Recorder
 
  --------------------
 |                    |
@@ -16,7 +16,7 @@ Welcome to Screen to GIF
 
 help_text = """
 start       Start recording
-save        Save recorded frames into a gif
+save        Save recorded frames into a gif or video
 """
 
 commands = ["start", "save", "help", "quit"]
