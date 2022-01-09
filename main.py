@@ -11,3 +11,6 @@ while True:
         record()
     elif option == "save":
         save()
+    else:
+        print("Program ended by user.")
+        break

@@ -101,12 +101,22 @@ def to_gif(images, filename, start_frame, end_frame, duration):
 
 
 def save_gif(filename, start_frame=1, end_frame=None):
+    if not os.path.isdir(filename):
+        print(f"Directory '{filename}' not found.")
+        return
+
     print("Saving recording...")
 
     images, average_time = get_images(filename)
 
     if end_frame is None:
         end_frame = len(images) + 1
+
+    if os.path.isfile(filename + ".gif"):
+        increment = 1
+        while os.path.isfile(filename + str(increment) + ".gif"):
+            increment += 1
+        filename += str(increment)
 
     to_gif(images, filename, start_frame=start_frame,
            end_frame=end_frame, duration=average_time)

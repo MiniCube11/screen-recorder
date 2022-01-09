@@ -18,7 +18,7 @@ start       Start recording
 save        Save recorded frames into a gif
 """
 
-commands = ["start", "save", "help"]
+commands = ["start", "save", "help", "quit"]
 
 
 def welcome_screen():
