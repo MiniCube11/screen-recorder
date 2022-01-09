@@ -4,6 +4,7 @@ import shutil
 import time
 import cv2
 from PIL import Image, ImageGrab
+from preview import preview_window
 from helper import get_input, get_valid_input, get_valid_integer, get_valid_directory
 
 
@@ -25,14 +26,23 @@ def cancel_recording():
     sys.exit()
 
 
-def start_recording():
+def start_options():
+    if input("See preview: ") == "y":
+        print("Close preview window to continue.")
+        preview_window(record_image)
+        print("window closed.")
+        time.sleep(1)
     if get_input("Press enter to start recording, Ctrl+C to stop recording, q to quit: ") == "q":
         cancel_recording()
 
 
-def record_frame(directory, index):
+def record_image(path):
     image = ImageGrab.grab()
-    image.save(f"{directory}/{index}.png")
+    image.save(path)
+
+
+def record_frame(directory, index):
+    record_image(f"{directory}/{index}.png")
 
 
 def record_frames(directory):
@@ -92,9 +102,9 @@ def get_images(directory):
 
 def get_available_filename(filename, extension):
     extension = "." + extension
+    increment = 1
 
     if os.path.isfile(filename + extension):
-        increment = 1
         while os.path.isfile(filename + str(increment) + extension):
             increment += 1
 
@@ -196,7 +206,7 @@ def record():
     filename = get_input("Enter filename: ")
     create_directory(filename)
 
-    start_recording()
+    start_options()
     record_frames(filename)
 
     save_options(filename)
