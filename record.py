@@ -2,8 +2,9 @@ import os
 import sys
 import shutil
 import time
+import cv2
 from PIL import Image, ImageGrab
-from helper import get_input, get_valid_input, get_valid_integer
+from helper import get_input, get_valid_input, get_valid_integer, get_valid_directory
 
 
 def create_directory(directory):
@@ -59,9 +60,7 @@ def record_frames(directory):
         f.write(str(average_time))
 
 
-def get_images(directory):
-    images = []
-    index = 1
+def get_average_time(directory):
     average_time = 70
 
     try:
@@ -70,6 +69,13 @@ def get_images(directory):
     except:
         print(
             f"Using default values, {directory}/info.txt is either missing or corrupted.")
+
+    return average_time
+
+
+def get_images(directory):
+    images = []
+    index = 1
 
     while True:
         filename = f"{directory}/{index}.png"
@@ -81,7 +87,18 @@ def get_images(directory):
             break
         index += 1
 
-    return images, average_time
+    return images
+
+
+def get_available_filename(filename, extension):
+    extension = "." + extension
+
+    if os.path.isfile(filename + extension):
+        increment = 1
+        while os.path.isfile(filename + str(increment) + extension):
+            increment += 1
+
+    return filename + str(increment)
 
 
 def to_gif(images, filename, start_frame, end_frame, duration):
@@ -107,19 +124,72 @@ def save_gif(filename, start_frame=1, end_frame=None):
 
     print("Saving recording...")
 
-    images, average_time = get_images(filename)
+    images = get_images(filename)
+    average_time = get_average_time(filename)
+
+    if len(images) == 0:
+        print(f"No images found in directory '{filename}'.")
+        return
 
     if end_frame is None:
         end_frame = len(images) + 1
 
-    if os.path.isfile(filename + ".gif"):
-        increment = 1
-        while os.path.isfile(filename + str(increment) + ".gif"):
-            increment += 1
-        filename += str(increment)
+    filename = get_available_filename(filename, "gif")
 
     to_gif(images, filename, start_frame=start_frame,
            end_frame=end_frame, duration=average_time)
+
+
+def save_video(directory):
+    print("Saving recording...")
+
+    size = (600, 400)
+    index = 1
+    images = []
+
+    while True:
+        filename = f"{directory}/{index}.png"
+        if os.path.isfile(filename):
+            image = cv2.imread(filename)
+            height, width, _ = image.shape
+            size = (width, height)
+            images.append(image)
+        else:
+            break
+        index += 1
+
+    if len(images) == 0:
+        print(f"No images found in directory '{directory}'.")
+        return
+
+    framerate = 1000 / get_average_time(directory)
+
+    filename = get_available_filename(directory, "avi")
+
+    output = cv2.VideoWriter(
+        filename + ".avi", cv2.VideoWriter_fourcc(*'MP42'), framerate, size)
+
+    for image in images:
+        image = cv2.resize(image, size)
+        output.write(image)
+
+    output.release()
+    print(f"Recording saved to {filename}.avi.")
+
+
+def save_options(filename):
+    extension = get_valid_input("Enter extension (gif/avi): ", ["gif", "avi"])
+
+    if extension == "gif":
+        start_frame = get_valid_integer(
+            "Start at frame (enter to use first frame): ", optional=True, default=1)
+        end_frame = get_valid_integer(
+            "End at frame (enter to use last frame): ", optional=True, default=None)
+
+        save_gif(filename, start_frame=start_frame, end_frame=end_frame)
+
+    elif extension == "avi":
+        save_video(filename)
 
 
 def record():
@@ -129,14 +199,9 @@ def record():
     start_recording()
     record_frames(filename)
 
-    save_gif(filename)
+    save_options(filename)
 
 
 def save():
-    filename = get_input("Enter name of recording: ")
-    start_frame = get_valid_integer(
-        "Start at frame (enter to use first frame): ", optional=True, default=1)
-    end_frame = get_valid_integer(
-        "End at frame (enter to use last frame): ", optional=True, default=None)
-
-    save_gif(filename, start_frame=start_frame, end_frame=end_frame)
+    filename = get_valid_directory("Enter name of recording: ")
+    save_options(filename)

@@ -1,3 +1,4 @@
+import os
 import sys
 
 welcome_text = """
@@ -59,6 +60,14 @@ def get_valid_input(prompt, valid_inputs, optional=False, default=None):
         if optional and not user_input:
             return default
         print(f"Please enter a valid input ({'/'.join(valid_inputs)}).")
+
+
+def get_valid_directory(prompt):
+    while True:
+        user_input = get_input(prompt)
+        if os.path.isdir(user_input):
+            return user_input
+        print(f"Directory '{user_input}' not found.")
 
 
 def get_option():
