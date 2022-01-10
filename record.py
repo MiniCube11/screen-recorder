@@ -30,8 +30,6 @@ def start_options():
     if input("See preview: ") == "y":
         print("Close preview window to continue.")
         preview_window(record_image)
-        print("window closed.")
-        time.sleep(1)
     if get_input("Press enter to start recording, Ctrl+C to stop recording, q to quit: ") == "q":
         cancel_recording()
 
