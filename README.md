@@ -10,6 +10,11 @@ Features:
 - Choose the frames to include in the recording
 - Export the recording to different formats (gif, avi)
 
+&nbsp;
+
+![Demo](githubdemo.gif)
+_Demo of tool, recorded with Screen Recorder._
+
 ## Installation
 
 Make sure you have Python installed.
