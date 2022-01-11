@@ -8,6 +8,10 @@ from preview import preview_window
 from helper import get_input, get_valid_input, get_valid_integer, get_valid_directory
 
 
+screen_width = -1
+screen_height = -1
+
+
 def create_directory(directory):
     if os.path.exists(directory):
         if get_valid_input(
@@ -27,23 +31,73 @@ def cancel_recording():
 
 
 def start_options():
-    if input("See preview: ") == "y":
-        print("Close preview window to continue.")
-        preview_window(record_image)
+    x, y, x1, y1 = get_valid_coordinates(None, None, None, None)
+    while True:
+        user_input = get_valid_input(
+            "Enter the name of the parameter you want to change (x/x1/y/y1, p to preview, enter to continue): ", ["x", "x1", "y", "y1", "p"], optional=True)
+        if user_input is None:
+            break
+        if user_input == "p":
+            print("Previewing:", (x, y, x1, y1))
+            print("Close preview window to continue.")
+            preview_window(record_image, (x, y, x1, y1))
+        else:
+            value = get_valid_integer(
+                f"Enter a new value for {user_input} (enter to skip): ", optional=True)
+            if value is None:
+                continue
+            if user_input == "x":
+                x = value
+            elif user_input == "x1":
+                x1 = value
+            elif user_input == "y":
+                y = value
+            else:
+                y1 = value
+            x, y, x1, y1 = get_valid_coordinates(x, y, x1, y1)
+
     if get_input("Press enter to start recording, Ctrl+C to stop recording, q to quit: ") == "q":
         cancel_recording()
 
+    return (x, y, x1, y1)
 
-def record_image(path):
-    image = ImageGrab.grab()
+
+def get_valid_coordinates(x, y, x1, y1):
+    global screen_width, screen_height
+    if screen_width == -1:
+        image = ImageGrab.grab()
+        screen_width, screen_height = image.size
+
+    if x is None:
+        x = 0
+    if y is None:
+        y = 0
+    if x1 is None:
+        x1 = screen_width
+    if y1 is None:
+        y1 = screen_height
+    if x > x1:
+        x, x1 = x1, x
+    if y > y1:
+        y, y1 = y1, y
+    x = max(x, 0)
+    y = max(y, 0)
+    x1 = min(x1, screen_width)
+    y1 = min(y1, screen_width)
+    return (x, y, x1, y1)
+
+
+def record_image(path, coordinates):
+
+    image = ImageGrab.grab(coordinates)
     image.save(path)
 
 
-def record_frame(directory, index):
-    record_image(f"{directory}/{index}.png")
+def record_frame(directory, index, coordinates):
+    record_image(f"{directory}/{index}.png", coordinates)
 
 
-def record_frames(directory):
+def record_frames(directory, coordinates):
     average_time = 0
 
     index = 1
@@ -51,7 +105,7 @@ def record_frames(directory):
     while True:
         try:
             start = time.time()
-            record_frame(directory, index)
+            record_frame(directory, index, coordinates)
             elapsed = time.time() - start
             average_time = (average_time * (index - 1) + elapsed) / index
             index += 1
@@ -101,10 +155,11 @@ def get_images(directory):
 def get_available_filename(filename, extension):
     extension = "." + extension
     increment = 1
-
     if os.path.isfile(filename + extension):
         while os.path.isfile(filename + str(increment) + extension):
             increment += 1
+    else:
+        return filename
 
     return filename + str(increment)
 
@@ -204,8 +259,8 @@ def record():
     filename = get_input("Enter filename: ")
     create_directory(filename)
 
-    start_options()
-    record_frames(filename)
+    coordinates = start_options()
+    record_frames(filename, coordinates)
 
     save_options(filename)
 

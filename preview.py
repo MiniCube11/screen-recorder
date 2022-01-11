@@ -3,10 +3,13 @@ from PIL import Image, ImageTk
 
 
 class Application(tk.Frame):
-    def __init__(self, parent, record_image, *args, **kwargs):
+    def __init__(self, parent, record_image, coordinates, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.coordinates = coordinates
         self.record_image = record_image
+
+        self.record_image("demo.png", self.coordinates)
 
         image = Image.open("demo.png")
         image.thumbnail((500, 500), Image.ANTIALIAS)
@@ -17,7 +20,7 @@ class Application(tk.Frame):
         self.callback()
 
     def callback(self):
-        self.record_image("demo.png")
+        self.record_image("demo.png", self.coordinates)
 
         image = Image.open("demo.png")
         image.thumbnail((500, 500), Image.ANTIALIAS)
@@ -28,8 +31,8 @@ class Application(tk.Frame):
         self.after_id = self.label.after(500, self.callback)
 
 
-def preview_window(record_image):
+def preview_window(record_image, coordinates):
     root = tk.Tk()
     root.title("Preview - Close window to continue")
-    Application(root, record_image).pack()
+    Application(root, record_image, coordinates).pack()
     root.mainloop()
