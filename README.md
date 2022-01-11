@@ -13,6 +13,7 @@ Features:
 &nbsp;
 
 ![Demo](githubdemo.gif)
+
 _Demo of tool, recorded with Screen Recorder._
 
 ## Installation
