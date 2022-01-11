@@ -6,8 +6,9 @@ Features:
 
 - Record your screen with a few commands
 - Capture the entire screen or a portion of the screen
-- Export the recording to different formats (gif, avi)
 - Preview the recording area in a popup window
+- Choose the frames to include in the recording
+- Export the recording to different formats (gif, avi)
 
 ## Installation
 
@@ -21,6 +22,8 @@ Run `main.py` to launch the tool:
 ```
 python main.py
 ```
+
+The tool will save the recording file to the same directory that main.py is located in.
 
 ## Technical Info
 

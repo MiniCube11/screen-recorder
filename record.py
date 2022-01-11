@@ -168,6 +168,9 @@ def to_gif(images, filename, start_frame, end_frame, duration):
     start_frame -= 1
     end_frame -= 1
 
+    start_frame = max(0, start_frame)
+    end_frame = min(len(images) - 1, end_frame)
+
     images[start_frame].save(
         f"{filename}.gif",
         save_all=True,
@@ -175,7 +178,6 @@ def to_gif(images, filename, start_frame, end_frame, duration):
         duration=duration,
         loop=0
     )
-    # TODO
 
     print(f"Recording saved to {filename}.gif.")
 
@@ -203,7 +205,7 @@ def save_gif(filename, start_frame=1, end_frame=None):
            end_frame=end_frame, duration=average_time)
 
 
-def save_video(directory):
+def save_video(directory, start_frame, end_frame):
     print("Saving recording...")
 
     size = (600, 400)
@@ -225,6 +227,15 @@ def save_video(directory):
         print(f"No images found in directory '{directory}'.")
         return
 
+    if end_frame is None:
+        end_frame = len(images)
+
+    start_frame -= 1
+    end_frame -= 1
+
+    start_frame = max(0, start_frame)
+    end_frame = min(len(images) - 1, end_frame)
+
     framerate = 1000 / get_average_time(directory)
 
     filename = get_available_filename(directory, "avi")
@@ -232,7 +243,7 @@ def save_video(directory):
     output = cv2.VideoWriter(
         filename + ".avi", cv2.VideoWriter_fourcc(*'MP42'), framerate, size)
 
-    for image in images:
+    for image in images[start_frame:end_frame]:
         image = cv2.resize(image, size)
         output.write(image)
 
@@ -243,16 +254,15 @@ def save_video(directory):
 def save_options(filename):
     extension = get_valid_input("Enter extension (gif/avi): ", ["gif", "avi"])
 
+    start_frame = get_valid_integer(
+        "Start at frame (enter to use first frame): ", optional=True, default=1)
+    end_frame = get_valid_integer(
+        "End at frame (enter to use last frame): ", optional=True, default=None)
+
     if extension == "gif":
-        start_frame = get_valid_integer(
-            "Start at frame (enter to use first frame): ", optional=True, default=1)
-        end_frame = get_valid_integer(
-            "End at frame (enter to use last frame): ", optional=True, default=None)
-
-        save_gif(filename, start_frame=start_frame, end_frame=end_frame)
-
+        save_gif(filename, start_frame, end_frame)
     elif extension == "avi":
-        save_video(filename)
+        save_video(filename, start_frame, end_frame)
 
 
 def record():
