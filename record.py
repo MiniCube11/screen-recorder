@@ -169,7 +169,7 @@ def to_gif(images, filename, start_frame, end_frame, duration):
     end_frame -= 1
 
     start_frame = max(0, start_frame)
-    end_frame = min(len(images) - 1, end_frame)
+    end_frame = min(len(images), end_frame)
 
     images[start_frame].save(
         f"{filename}.gif",
@@ -234,7 +234,7 @@ def save_video(directory, start_frame, end_frame):
     end_frame -= 1
 
     start_frame = max(0, start_frame)
-    end_frame = min(len(images) - 1, end_frame)
+    end_frame = min(len(images), end_frame)
 
     framerate = 1000 / get_average_time(directory)
 
